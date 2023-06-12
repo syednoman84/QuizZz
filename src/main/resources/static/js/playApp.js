@@ -23,7 +23,7 @@
 			$http.get("/api/quizzes/" + $scope.quizId + "/questions?onlyValid=true")
 				.then(
 					function(response) {
-						questions = questions.concat(response.data);
+						questions = (questions.concat(response.data)).sort(() => Math.random() -0.5);
 						$scope.totalQuestions = questions.length;
 						$scope.setQuestion($scope.questionCount);
 					}, 
@@ -39,7 +39,7 @@
 				.then(
 					function(response) {
 						$scope.currentQuestion = questions[questionNumber];
-						$scope.currentAnswers = response.data;
+						$scope.currentAnswers = (response.data).sort(() => Math.random() -0.5);
 					}, 
 					function(reason) {
 						$scope.error = "Could not fetch the data.";
