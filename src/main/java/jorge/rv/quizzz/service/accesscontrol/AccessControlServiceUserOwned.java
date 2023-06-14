@@ -87,6 +87,7 @@ public abstract class AccessControlServiceUserOwned<T extends BaseModel & UserOw
 
 	private AuthenticatedUser getCurrentUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println("Entered into authentication");
 		if (authentication.getPrincipal() == null || authentication.getPrincipal() instanceof String) {
 			return null;
 		}
