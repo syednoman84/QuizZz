@@ -15,4 +15,5 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
 	List<Answer> findByQuestionOrderByOrderAsc(Question question);
 
+	Answer findById(long i);
 }

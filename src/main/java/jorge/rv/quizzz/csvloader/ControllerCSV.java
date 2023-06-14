@@ -1,6 +1,7 @@
 package jorge.rv.quizzz.csvloader;
 
 
+import jorge.rv.quizzz.controller.utils.RestVerifier;
 import jorge.rv.quizzz.model.Answer;
 import jorge.rv.quizzz.model.Question;
 import jorge.rv.quizzz.repository.AnswerRepository;
@@ -12,9 +13,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Random;
 
@@ -34,14 +38,18 @@ public class ControllerCSV {
 	ServiceCSV fileService;
 
 	@RequestMapping(value = "/dataloader", method = RequestMethod.POST)
-	public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
+	public ResponseEntity<ResponseMessage> uploadFile(
+			@RequestParam("file") MultipartFile file,
+			@RequestParam("quizName") String quizName,
+			@RequestParam("quizDesc") String quizDesc) {
 		String message = "";
 
 		if (HelperCSV.hasCSVFormat(file)) {
 			try {
 				fileService.save(file);
+				System.out.println("File loaded. Creating Quiz");
 				// add a call to a new service method to create a quiz and populate the questions and answers
-				fileService.createQuiz();
+				fileService.createQuiz(quizName, quizDesc);
 				message = "Uploaded the file successfully: " + file.getOriginalFilename();
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
 			} catch (Exception e) {
@@ -63,6 +71,27 @@ public class ControllerCSV {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
 				.contentType(MediaType.parseMediaType("application/csv"))
 				.body(file);
+	}
+
+	/*@GetMapping("/api/answers/replicateanswers")
+	@PreAuthorize("isAuthenticated()")
+	public String replicateAnswers() {
+
+		fileService.replicateAnswers();
+		return "Completed.";
+	}*/
+
+	@RequestMapping(value = "/api/answers/replicateanswers", method = RequestMethod.POST)
+	@PreAuthorize("isAuthenticated()")
+	@ResponseStatus(HttpStatus.CREATED)
+	public String save() {
+
+//		RestVerifier.verifyModelResult(result);
+		fileService.replicateAnswers();
+		return "Completed";
+
+//		Question question = questionService.find(question_id);
+//		return questionService.addAnswerToQuestion(answer, question);
 	}
 
 	/*List<Question> questions = getAllQuestions();

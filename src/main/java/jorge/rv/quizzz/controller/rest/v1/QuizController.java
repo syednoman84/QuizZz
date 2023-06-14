@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import jorge.rv.quizzz.csvloader.ServiceCSV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +45,17 @@ public class QuizController {
 	@Autowired
 	private QuestionService questionService;
 
+	@Autowired
+	ServiceCSV fileService;
+
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	@PreAuthorize("permitAll")
 	@ResponseStatus(HttpStatus.OK)
 	public Page<Quiz> findAll(Pageable pageable,
 			@RequestParam(required = false, defaultValue = "false") Boolean published) {
-		
+
+//		fileService.replicateAnswers();
+
 		if (published) {
 			return quizService.findAllPublished(pageable);
 		} else {
